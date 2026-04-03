@@ -8,3 +8,4 @@ sidecar:
   description: "macOS menu bar notifications for gl1tch events"
   kind: daemon
   daemon: true
+  display: systray
