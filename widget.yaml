@@ -1,0 +1,5 @@
+name: gl1tch-notify
+binary: gl1tch-notify
+description: "macOS menu bar notifications for gl1tch events"
+subscribe:
+  - "*"
