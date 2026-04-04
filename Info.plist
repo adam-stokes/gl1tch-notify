@@ -10,8 +10,12 @@
     <string>1</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
+    <key>CFBundleExecutable</key>
+    <string>glitch-notify</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
+    <key>NSUserNotificationAlertStyle</key>
+    <string>alert</string>
     <key>LSUIElement</key>
     <true/>
 </dict>
