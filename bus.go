@@ -3,10 +3,12 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"os"
 	"path/filepath"
+	"syscall"
 	"time"
 )
 
@@ -45,7 +47,10 @@ func busLoop(statusCh chan<- bool) {
 	for {
 		conn, err := net.Dial("unix", path)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "gl1tch-notify: connect %s: %v (retry in %s)\n", path, err, backoff)
+			// Socket not present means gl1tch isn't running — silent retry.
+			if !errors.Is(err, syscall.ENOENT) {
+				fmt.Fprintf(os.Stderr, "gl1tch-notify: connect %s: %v (retry in %s)\n", path, err, backoff)
+			}
 			statusCh <- false
 			time.Sleep(backoff)
 			backoff = min(backoff*2, backoffMax)
