@@ -1,4 +1,4 @@
-module github.com/adam-stokes/gl1tch-notify
+module github.com/adam-stokes/glitch-notify
 
 go 1.22
 

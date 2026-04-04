@@ -13,22 +13,22 @@ import (
 )
 
 const (
-	registrationMsg = `{"name":"gl1tch-notify","subscribe":["*"]}` + "\n"
+	registrationMsg = `{"name":"glitch-notify","subscribe":["*"]}` + "\n"
 	backoffMin      = 1 * time.Second
 	backoffMax      = 30 * time.Second
 )
 
 // socketPath returns the BUSD unix socket path, trying XDG_RUNTIME_DIR first,
-// then $HOME/.cache/glitch/bus.sock.
+// then the platform cache dir (~/Library/Caches on macOS, ~/.cache on Linux).
 func socketPath() string {
 	if dir := os.Getenv("XDG_RUNTIME_DIR"); dir != "" {
 		return filepath.Join(dir, "glitch", "bus.sock")
 	}
-	home, err := os.UserHomeDir()
+	cache, err := os.UserCacheDir()
 	if err != nil {
-		home = "."
+		cache = filepath.Join(".", ".cache")
 	}
-	return filepath.Join(home, ".cache", "glitch", "bus.sock")
+	return filepath.Join(cache, "glitch", "bus.sock")
 }
 
 // eventFrame is the wire format for events received from the bus.
@@ -49,7 +49,7 @@ func busLoop(statusCh chan<- bool) {
 		if err != nil {
 			// Socket not present means gl1tch isn't running — silent retry.
 			if !errors.Is(err, syscall.ENOENT) {
-				fmt.Fprintf(os.Stderr, "gl1tch-notify: connect %s: %v (retry in %s)\n", path, err, backoff)
+				fmt.Fprintf(os.Stderr, "glitch-notify: connect %s: %v (retry in %s)\n", path, err, backoff)
 			}
 			statusCh <- false
 			time.Sleep(backoff)
@@ -59,7 +59,7 @@ func busLoop(statusCh chan<- bool) {
 
 		// Register
 		if _, err := fmt.Fprint(conn, registrationMsg); err != nil {
-			fmt.Fprintf(os.Stderr, "gl1tch-notify: register: %v\n", err)
+			fmt.Fprintf(os.Stderr, "glitch-notify: register: %v\n", err)
 			conn.Close()
 			statusCh <- false
 			time.Sleep(backoff)
@@ -77,19 +77,19 @@ func busLoop(statusCh chan<- bool) {
 			}
 			var frame eventFrame
 			if err := json.Unmarshal(line, &frame); err != nil {
-				fmt.Fprintf(os.Stderr, "gl1tch-notify: parse: %v\n", err)
+				fmt.Fprintf(os.Stderr, "glitch-notify: parse: %v\n", err)
 				continue
 			}
 			handleEvent(frame.Event, frame.Payload)
 		}
 
 		if err := scanner.Err(); err != nil {
-			fmt.Fprintf(os.Stderr, "gl1tch-notify: read: %v\n", err)
+			fmt.Fprintf(os.Stderr, "glitch-notify: read: %v\n", err)
 		}
 		conn.Close()
 		statusCh <- false
 
-		fmt.Fprintf(os.Stderr, "gl1tch-notify: disconnected, retry in %s\n", backoff)
+		fmt.Fprintf(os.Stderr, "glitch-notify: disconnected, retry in %s\n", backoff)
 		time.Sleep(backoff)
 		backoff = min(backoff*2, backoffMax)
 	}

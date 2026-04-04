@@ -1,6 +1,6 @@
-name: gl1tch-notify
+name: glitch-notify
 description: "macOS menu bar notifications for gl1tch events"
-binary: gl1tch-notify
+binary: glitch-notify
 version: "0.1.0"
 install:
   go: "github.com/adam-stokes/gl1tch-notify"

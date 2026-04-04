@@ -4,11 +4,11 @@ gen-icon:
 	go run ./cmd/gen-icon
 
 build:
-	go build -o gl1tch-notify .
+	go build -o glitch-notify .
 
 install:
 	go install .
-	ln -sf $(shell go env GOPATH)/bin/gl1tch-notify $(HOME)/.local/bin/gl1tch-notify
+	ln -sf $(shell go env GOPATH)/bin/glitch-notify $(HOME)/.local/bin/glitch-notify
 
 run:
 	go run .

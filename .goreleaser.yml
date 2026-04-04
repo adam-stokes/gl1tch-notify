@@ -2,11 +2,13 @@
 # https://goreleaser.com
 version: 2
 
-project_name: gl1tch-notify
+project_name: glitch-notify
 
 builds:
-  - id: gl1tch-notify
-    binary: gl1tch-notify
+  - id: glitch-notify
+    # Place the binary inside the .app bundle structure so the archive
+    # contains a complete glitch-notify.app ready for Homebrew to install.
+    binary: glitch-notify.app/Contents/MacOS/glitch-notify
     env:
       - CGO_ENABLED=1
     goos:
@@ -19,17 +21,24 @@ builds:
 
 archives:
   - id: default
-    format_overrides:
-      - goos: windows
-        format: zip
+    format: tar.gz
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    # Include the Info.plist so the archive contains a valid .app bundle:
+    #   glitch-notify.app/
+    #     Contents/
+    #       Info.plist
+    #       MacOS/
+    #         glitch-notify
+    files:
+      - src: Info.plist
+        dst: glitch-notify.app/Contents/
 
 checksum:
   name_template: "checksums.txt"
   algorithm: sha256
 
 brews:
-  - name: gl1tch-notify
+  - name: glitch-notify
     repository:
       owner: 8op-org
       name: homebrew-tap
@@ -38,9 +47,10 @@ brews:
     description: "gl1tch system tray notification daemon"
     license: "MIT"
     install: |
-      bin.install "gl1tch-notify"
+      prefix.install "glitch-notify.app"
+      bin.write_exec_script prefix/"glitch-notify.app/Contents/MacOS/glitch-notify"
     test: |
-      assert_predicate bin/"gl1tch-notify", :exist?
+      assert_predicate bin/"glitch-notify", :exist?
     skip_upload: false
 
 changelog:

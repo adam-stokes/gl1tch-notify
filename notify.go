@@ -1,11 +1,10 @@
 package main
 
-import (
-	"fmt"
-	"os"
-	"os/exec"
-	"strings"
-)
+/*
+#cgo LDFLAGS: -framework Foundation -framework UserNotifications
+#include "notify_darwin.h"
+*/
+import "C"
 
 // eventMap maps BUSD event names to notification titles and the payload keys
 // used as subtitle (first match wins).
@@ -25,36 +24,11 @@ var eventMap = map[string]struct {
 	"game.bounty.completed":     {"Bounty complete", []string{"bounty", "name"}},
 }
 
-// sendNotification fires a macOS notification via osascript.
-// subtitle may be empty; when empty the subtitle argument is omitted entirely.
+// sendNotification delivers a macOS notification via UNUserNotificationCenter.
+// Being called from within the app process avoids the osascript daemon-context
+// limitation where display notification is silently dropped.
 func sendNotification(title, subtitle string) {
-	// Escape single quotes for safe inline AppleScript string interpolation.
-	safeTitle := escapeSingleQuotes(title)
-	safeSubtitle := escapeSingleQuotes(subtitle)
-
-	var script string
-	if safeSubtitle != "" {
-		script = fmt.Sprintf(
-			`display notification "" with title 'gl1tch' subtitle '%s — %s'`,
-			safeSubtitle, safeTitle,
-		)
-	} else {
-		script = fmt.Sprintf(
-			`display notification "" with title 'gl1tch' subtitle '%s'`,
-			safeTitle,
-		)
-	}
-
-	cmd := exec.Command("osascript", "-e", script)
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "gl1tch-notify: osascript: %v\n", err)
-	}
-}
-
-// escapeSingleQuotes escapes single-quote characters for AppleScript string literals.
-func escapeSingleQuotes(s string) string {
-	return strings.ReplaceAll(s, "'", "'\\''")
+	C.sendUserNotification(C.CString(title), C.CString(subtitle))
 }
 
 // handleEvent maps a BUSD event frame to a notification.
