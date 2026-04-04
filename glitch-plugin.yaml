@@ -1,9 +1,9 @@
 name: glitch-notify
-description: "macOS menu bar notifications for gl1tch events"
+description: "macOS menu bar notifications for gl1tch events (Swift)"
 binary: glitch-notify
-version: "0.1.0"
+version: "0.2.0"
 install:
-  go: "github.com/adam-stokes/gl1tch-notify"
+  make: install
 sidecar:
   description: "macOS menu bar notifications for gl1tch events"
   kind: daemon
