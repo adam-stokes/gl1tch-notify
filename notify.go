@@ -22,6 +22,8 @@ var eventMap = map[string]struct {
 	"cron.job.started":          {"Cron started", []string{"job", "name"}},
 	"game.achievement.unlocked": {"Achievement!", []string{"achievement", "name"}},
 	"game.bounty.completed":     {"Bounty complete", []string{"bounty", "name"}},
+	"mattermost.mention":        {"Mattermost mention", []string{"sender_name", "message"}},
+	"mattermost.direct":         {"Mattermost DM", []string{"sender_name", "message"}},
 }
 
 // sendNotification delivers a macOS notification via UNUserNotificationCenter.
