@@ -1,5 +1,6 @@
 name: glitch-notify
-binary: glitch-notify
 description: "macOS menu bar notifications for gl1tch events"
-subscribe:
-  - "*"
+kind: daemon
+daemon: true
+display: systray
+command: glitch-notify

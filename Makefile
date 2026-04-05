@@ -18,6 +18,7 @@ bundle: build
 
 install: bundle
 	ln -sf "$(BUNDLE)/Contents/MacOS/$(BINARY)" "$(HOME)/.local/bin/$(BINARY)"
+	cp widget.yaml "$(HOME)/.config/glitch/wrappers/$(BINARY).yaml"
 	@echo "installed: $(HOME)/.local/bin/$(BINARY)"
 
 run: bundle
